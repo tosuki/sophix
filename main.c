@@ -6,48 +6,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "./wm.h"
+
 #include "./cursor.h"
-
-void panic(char *message) {
-    puts(message);
-    exit(1);
-}
-
-Display *display;
-Window root_window;
+#include "./keyboard.h"
 
 int main() {
-    display = XOpenDisplay(NULL);
+    WindowManager* windowManager = createWindowManager();
 
-    if (display == NULL) {
-        panic("Unable to open display");
-    }
+    XSelectInput(windowManager->display, windowManager->rootWindow, SubstructureNotifyMask | SubstructureRedirectMask);
 
-    root_window = DefaultRootWindow(display);
-
-    XSelectInput(display, root_window, SubstructureNotifyMask | SubstructureRedirectMask);
-    create_cursor(display, &root_window);
-    XSync(display, 0);
+    createCursor(windowManager);
+    dispatchKeyboardEvents(windowManager);
+    XSync(windowManager->display, False);
 
     XEvent event;
 
     for(;;) {
-        XNextEvent(display, &event);
+        XNextEvent(windowManager->display, &event);
         
         switch (event.type) {
+            case KeyPress:
+                puts("key pressed");
+                break;
+
             case ButtonPress:
-                XAllowEvents(display, ReplayPointer, CurrentTime);
-                XSync(display, 0);
+                XAllowEvents(windowManager->display, ReplayPointer, CurrentTime);
+                XSync(windowManager->display, 0);
                 puts("Button pressed");
                 break;
             default:
                 puts("Unexpected event");
                 break;
         }
-        XSync(display, 0);
+        XSync(windowManager->display, False);
     }    
 
-    XCloseDisplay(display);
+    closeWindowManager(windowManager);
 
     return 0;
 }

@@ -1,31 +1,32 @@
 #include "./cursor.h"
+#include "./wm.h"
 
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 
-void register_cursor_button(Display *display, Window *root_window, Cursor *pointer, unsigned int button) {
+void dispatchCursorButtonEvent(WindowManager *wm, Cursor *pointer, unsigned int button) {
     XGrabButton(
-        display,
+        wm->display,
         button,
         0,
-        *root_window,
+        wm->rootWindow,
         0,
         ButtonPressMask,
         GrabModeSync,
         GrabModeAsync,
-        *root_window,
+        wm->rootWindow,
         *pointer
     );
 };
 
-void create_cursor(Display *display, Window *root_window) {
-    Cursor cursor = XCreateFontCursor(display, XC_left_ptr);
+void createCursor(WindowManager* wm) {
+    Cursor cursor = XCreateFontCursor(wm->display, XC_left_ptr);
 
-    XDefineCursor(display, *root_window, cursor);
+    XDefineCursor(wm->display, wm->rootWindow, cursor);
 
-    register_cursor_button(display, root_window, &cursor, Button1);
-    register_cursor_button(display, root_window, &cursor, Button2);
-    register_cursor_button(display, root_window, &cursor, Button3);
-    register_cursor_button(display, root_window, &cursor, Button4);
+    dispatchCursorButtonEvent(wm, &cursor, Button1);
+    dispatchCursorButtonEvent(wm, &cursor, Button2);
+    dispatchCursorButtonEvent(wm, &cursor, Button3);
+    dispatchCursorButtonEvent(wm, &cursor, Button4);
 }
 

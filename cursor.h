@@ -2,8 +2,9 @@
 #define CURSOR_H
 
 #include <X11/Xlib.h>
+#include "./wm.h"
 
 
-void create_cursor(Display *display, Window *root_window);
+void createCursor(WindowManager* wm);
 
 #endif

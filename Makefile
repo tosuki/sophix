@@ -1,7 +1,7 @@
 all: build/sophix
 
 # Source files
-SRCS := src/sophix.c src/cursor.c src/keyboard.c src/wm.c src/lib/utils.c src/window.c
+SRCS := src/sophix.c src/cursor.c src/keyboard.c src/wm.c src/frame.c src/lib/utils.c src/window.c
 
 # Output directory
 BUILD_DIR := build

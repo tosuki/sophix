@@ -1,7 +1,9 @@
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <malloc.h>
 
 #include "./wm.h"
+#include "./window_collection.h"
 #include "./cursor.h"
 #include "./keyboard.h"
 #include "./window.h"
@@ -15,6 +17,10 @@ void initializeEventLoop(WindowManager* wm) {
         XNextEvent(wm->display, &event);
 
         switch (event.type) {
+            case ReparentNotify:
+            case CreateNotify:
+                break;
+
             case KeyPress:
             case KeyRelease:
                 printf("Mask: %d Key %d pressed\n", event.xkey.state, event.xkey.keycode);
@@ -68,6 +74,7 @@ WindowManager* createWindowManager() {
 
     windowManager->display = display;
     windowManager->rootWindow = DefaultRootWindow(display);
+    windowManager->childWindows = createWindowCollection(DEFAULT_WINDOW_COLLECTION_CAPACITY);
 
     return windowManager;
 }

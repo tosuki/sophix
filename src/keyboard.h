@@ -5,5 +5,6 @@
 #include "./wm.h"
 
 void dispatchKeyboardEvents(WindowManager* wm);
+void dispatchWindowKeyboardEvents(WindowManager* wm, Window* window);
 
 #endif

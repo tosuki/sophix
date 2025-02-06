@@ -1,5 +1,28 @@
-all: build
-SRCS: main.c cursor.c
+all: build/sophix
 
-build:
-	gcc sophix.c cursor.c keyboard.c wm.c error.c -o sophix -Wall -Wextra -lX11
+# Source files
+SRCS := src/sophix.c src/cursor.c src/keyboard.c src/wm.c src/lib/utils.c
+
+# Output directory
+BUILD_DIR := build
+BIN := $(BUILD_DIR)/sophix
+
+# Compiler and flags
+CC := gcc
+CFLAGS := -Wall -Wextra
+LIBS := -lX11
+
+# Create build directory if not exists
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Compile binary into ./build directory
+$(BIN): $(SRCS) | $(BUILD_DIR)
+	$(CC) $(SRCS) -o $(BIN) $(CFLAGS) $(LIBS)
+
+# Default target
+build: $(BIN)
+
+# Clean build files
+clean:
+	rm -rf $(BUILD_DIR)

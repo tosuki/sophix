@@ -10,5 +10,6 @@ typedef struct windowManager {
 
 WindowManager* createWindowManager();
 void closeWindowManager(WindowManager* wm);
+void setupWindowManager(WindowManager* wm);
 
 #endif

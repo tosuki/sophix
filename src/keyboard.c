@@ -19,5 +19,5 @@ void dispatchKey(WindowManager* wm, char* key, unsigned int mod) {
 }
 
 void dispatchKeyboardEvents(WindowManager* wm) {
-    dispatchKey(wm, "a", ShiftMask);
+    dispatchKey(wm, "q", ShiftMask);
 }

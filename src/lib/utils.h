@@ -1,5 +1,5 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef UTILS_H
+#define UTILS_H
 
 void panic(char* message);
 

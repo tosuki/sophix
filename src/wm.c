@@ -4,6 +4,7 @@
 #include "./wm.h"
 #include "./cursor.h"
 #include "./keyboard.h"
+#include "./window.h"
 
 #include "./lib/utils.h"
 
@@ -15,12 +16,24 @@ void initializeEventLoop(WindowManager* wm) {
 
         switch (event.type) {
             case KeyPress:
-                puts("A key got pressed lol");
+            case KeyRelease:
+                printf("Mask: %d Key %d pressed\n", event.xkey.state, event.xkey.keycode);
+                
                 break;
             case ButtonPress:
                 XAllowEvents(wm->display, ReplayPointer, CurrentTime);
                 printf("Button %d pressed\n", event.xbutton.button);
                 break;
+            case ConfigureRequest:
+                puts("Received a request to configure the window");
+                configureWindow(wm, event.xconfigurerequest);
+                break;
+            
+            case MapRequest:
+                puts("Mapping window");
+                mapWindow(wm, event.xmaprequest);
+                break;
+
             default:
                 printf("Unhandled event of type %d\n", event.type);
                 break;

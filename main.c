@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "./cursor.h"
+
 void panic(char *message) {
     puts(message);
     exit(1);
@@ -24,6 +26,7 @@ int main() {
     root_window = DefaultRootWindow(display);
 
     XSelectInput(display, root_window, SubstructureNotifyMask | SubstructureRedirectMask);
+    create_cursor(display, &root_window);
     XSync(display, 0);
 
     XEvent event;
@@ -32,25 +35,17 @@ int main() {
         XNextEvent(display, &event);
         
         switch (event.type) {
+            case ButtonPress:
+                XAllowEvents(display, ReplayPointer, CurrentTime);
+                XSync(display, 0);
+                puts("Button pressed");
+                break;
             default:
                 puts("Unexpected event");
                 break;
         }
         XSync(display, 0);
     }    
-
-    XColor color;
-    if (!XAllocNamedColor(display, DefaultColormap(display, DefaultScreen(display)), "#ffffff", &color, &color)) {
-        fprintf(stderr, "Unable to allocate color\n");
-        return 1;
-    }
-
-    XSetWindowBackground(display, root_window, color.pixel);
-
-    Cursor cursor = XCreateFontCursor(display, XC_left_ptr);
-
-    XDefineCursor(display, root_window, cursor);
-    XSync(display, 0);
 
     XCloseDisplay(display);
 

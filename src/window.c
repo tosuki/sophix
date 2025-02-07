@@ -1,7 +1,7 @@
 #include <X11/Xlib.h>
-#include <stdio.h>
 
 #include "./window.h"
+#include "./window_collection.h"
 #include "./wm.h"
 #include "./frame.h"
 #include "./keyboard.h"
@@ -12,7 +12,9 @@
  * **/
 void configureWindow(WindowManager *wm, XConfigureRequestEvent event) {
     XWindowChanges windowProperties;
-
+    
+    int windowIndex = getIndexOfWindowCollection(wm->childWindows, event.window);
+ 
     windowProperties.height = event.height;
     windowProperties.width = event.width;
     windowProperties.border_width = event.border_width;
@@ -20,6 +22,13 @@ void configureWindow(WindowManager *wm, XConfigureRequestEvent event) {
     windowProperties.y = event.y;
     windowProperties.sibling = event.above;
     windowProperties.stack_mode = event.detail;
+
+    if (windowIndex != -1) {
+        Window windowFrame = getWindowOfWindowCollectionByIndex(wm->childWindows, windowIndex);
+        XConfigureWindow(wm->display, windowFrame, event.value_mask, &windowProperties);
+
+        return;
+    }
 
     XConfigureWindow(wm->display, event.window, event.value_mask, &windowProperties);
 }
@@ -52,9 +61,10 @@ void frameWindow(WindowManager *wm, Window* window) {
         frameProperties.backgroundColor
     );
 
-    XAddToSaveSet(wm->display, window);//save the window entity in the save set managed by x11 in case the wm crashes
+    XAddToSaveSet(wm->display, *window);//save the window entity in the save set managed by x11 in case the wm crashes
     XReparentWindow(wm->display, *window, frameWindow, 0, 0);
     XMapWindow(wm->display, frameWindow);
+    addWindowToWindowCollection(wm->childWindows, frameWindow);    
 
     dispatchWindowKeyboardEvents(wm, &frameWindow);
 }

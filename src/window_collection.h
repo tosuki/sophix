@@ -12,7 +12,10 @@ typedef struct _windowCollection {
     int length;
 } WindowCollection;
 
-WindowCollection* createWindowCollection(int initialCapacity);
+WindowCollection* createWindowCollection();
+
+int getIndexOfWindowCollection(WindowCollection* windowCollection, Window window);
+Window getWindowOfWindowCollectionByIndex(WindowCollection* windowCollection, int index);
 void addWindowToWindowCollection(WindowCollection* windowCollection, Window window);
 void freeWindowCollection(WindowCollection* windowCollection);
 

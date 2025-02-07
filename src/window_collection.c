@@ -4,10 +4,7 @@
 
 #include "./window_collection.h"
 #include "./lib/utils.h"
-/**
- * 
- * PLEASE GOD, TELL ME I WONT HAVE TO IMPLEMENT A HASHMAP AGAIN 
- */
+
 void* allocateWindowCollectionMemory(WindowCollection* windowCollection) {
     windowCollection->values = malloc(sizeof(Window)*windowCollection->capacity);
 
@@ -18,14 +15,14 @@ void* allocateWindowCollectionMemory(WindowCollection* windowCollection) {
     return windowCollection->values;
 }
 
-WindowCollection* createWindowCollection(int initialCapacity) {
-    WindowCollection* windowCollection = malloc(sizeof(windowCollection));
+WindowCollection* createWindowCollection() {
+    WindowCollection* windowCollection = malloc(sizeof(WindowCollection));
 
     if (windowCollection == NULL) {
         panic("Failed to allocate memory to window collection");
     }
 
-    windowCollection->capacity  = initialCapacity || DEFAULT_WINDOW_COLLECTION_CAPACITY;
+    windowCollection->capacity  = DEFAULT_WINDOW_COLLECTION_CAPACITY;
     windowCollection->length = 0;
     windowCollection->values = allocateWindowCollectionMemory(windowCollection);
 
@@ -45,6 +42,23 @@ void addWindowToWindowCollection(WindowCollection* windowCollection, Window wind
 
     windowCollection->values[windowCollection->length] = window;
     windowCollection->length += 1;
+    printf("Added window %li to the collection: [L:%d, C:%d]\n", window, windowCollection->length, windowCollection->capacity);
+}
+
+int getIndexOfWindowCollection(WindowCollection* windowCollection, Window window) {
+    int windowIndex = -1;
+
+    for (int i = 0; i < windowCollection->length; i++) {
+        if (windowCollection->values[i] == window) {
+            windowIndex = i;
+        }
+    }
+
+    return windowIndex;
+}
+
+Window getWindowOfWindowCollectionByIndex(WindowCollection* windowCollection, int index) {
+    return windowCollection->values[index];
 }
 
 void freeWindowCollection(WindowCollection* windowCollection) {

@@ -69,6 +69,15 @@ void frameWindow(WindowManager *wm, Window* window) {
     dispatchWindowKeyboardEvents(wm, &frameWindow);
 }
 
+void unframeWindow(WindowManager* wm, Window* window) {
+    // to do
+}
+
+void unmapWindow(WindowManager* wm, XUnmapEvent event) {
+    unframeWindow(wm, &event.window);
+    XUnmapWindow(wm->display, event.window);
+}
+
 void mapWindow(WindowManager *wm, XMapRequestEvent event) {
     frameWindow(wm, &event.window);
     XMapWindow(wm->display, event.window);

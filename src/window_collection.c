@@ -1,66 +1,101 @@
-#include <stdio.h>
 #include <malloc.h>
 #include <X11/Xlib.h>
 
 #include "./window_collection.h"
 #include "./lib/utils.h"
 
-void* allocateWindowCollectionMemory(WindowCollection* windowCollection) {
-    windowCollection->values = malloc(sizeof(Window)*windowCollection->capacity);
+WindowCollection* createWindowCollection() {
+    WindowCollection* collection = malloc(sizeof(WindowCollection));
 
-    if (windowCollection->values == NULL) {
-        panic("Failed to allocate memory to window collection values!");
+    if (collection == NULL) {
+        panic("Failed to allocate memory to the window collection");
     }
 
-    return windowCollection->values;
+    collection->nodes = NULL;
+    collection->size = 0;
+
+    return collection;
 }
 
-WindowCollection* createWindowCollection() {
-    WindowCollection* windowCollection = malloc(sizeof(WindowCollection));
+WindowNode* createWindowNode(Window value, WindowNode* next) {
+    WindowNode* node = malloc(sizeof(WindowNode));
 
-    if (windowCollection == NULL) {
-        panic("Failed to allocate memory to window collection");
+    if (node == NULL) {
+        panic("Failed to allocate memory to the WindowNode");
     }
 
-    windowCollection->capacity  = DEFAULT_WINDOW_COLLECTION_CAPACITY;
-    windowCollection->length = 0;
-    windowCollection->values = allocateWindowCollectionMemory(windowCollection);
+    node->window = value;
+    node->next = next;
+
+    return node;
+}
+
+WindowNode* freeNextWindowNode(WindowNode* node) {
+    if (node->next == NULL) {
+        return node;
+    }
+
+    if (node->next->next == NULL) {
+        free(node->next);
+        return node;
+    }
+
+    WindowNode* last = node->next->next;
+    free(node->next);
+    node->next = last;
+
+    return node;
+}
+
+void windowCollectionAddItem(WindowCollection* windowCollection, Window window) {
+    if (windowCollection->nodes == NULL) {
+        windowCollection->nodes = createWindowNode(window, NULL);
+    } else {
+        windowCollection->nodes = createWindowNode(
+            window,
+            windowCollection->nodes
+        );
+    }
+}
+
+WindowNode* getWindowNode(WindowNode* root, Window value) {
+    if (root == NULL) {
+        return NULL;
+    }
+    
+    if (root->window == value) {
+        return root;
+    }
+
+    if (root->next != NULL) {
+        return getWindowNode(root->next, value);
+    }
+
+    return NULL;
+}
+
+WindowNode* windowCollectionGetItem(WindowCollection* windowCollection, Window windowId) {
+    return getWindowNode(windowCollection->nodes, windowId);    
+}
+
+/**
+ * a, b, c
+ * a -> b -> c
+ * a -> c -> ...
+ */
+WindowCollection* windowCollectionRemoveItem(WindowCollection* windowCollection, Window windowId) {
+    if (windowCollection->nodes == NULL) {
+        return windowCollection; 
+    }
+
+    if (windowCollection->nodes->window == windowId) {
+        WindowNode* nextNode = windowCollection->nodes->next;
+
+        free(windowCollection->nodes);
+        windowCollection->nodes = nextNode;
+
+        return windowCollection;
+    }
 
     return windowCollection;
-}
-
-void reallocateWindowCollectionMemory(WindowCollection* windowCollection) {
-    windowCollection->capacity = windowCollection->capacity * REALLOCATE_WINDOW_COLLECTION_FACTOR;
-    allocateWindowCollectionMemory(windowCollection);
-}
-
-void addWindowToWindowCollection(WindowCollection* windowCollection, Window window) {
-    if (windowCollection->length >= windowCollection->capacity) {
-        //window collection is full
-        reallocateWindowCollectionMemory(windowCollection);
-    }
-
-    windowCollection->values[windowCollection->length] = window;
-    windowCollection->length += 1;
-    printf("Added window %li to the collection: [L:%d, C:%d]\n", window, windowCollection->length, windowCollection->capacity);
-}
-
-int getIndexOfWindowCollection(WindowCollection* windowCollection, Window window) {
-    int windowIndex = -1;
-
-    for (int i = 0; i < windowCollection->length; i++) {
-        if (windowCollection->values[i] == window) {
-            windowIndex = i;
-        }
-    }
-
-    return windowIndex;
-}
-
-Window getWindowOfWindowCollectionByIndex(WindowCollection* windowCollection, int index) {
-    return windowCollection->values[index];
-}
-
-void freeWindowCollection(WindowCollection* windowCollection) {
-    free(windowCollection);
 }

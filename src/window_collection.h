@@ -1,22 +1,23 @@
-#ifndef ARRAY_H
-#define ARRAY_H
-
-#define DEFAULT_WINDOW_COLLECTION_CAPACITY 15
-#define REALLOCATE_WINDOW_COLLECTION_FACTOR 2
+#ifndef WINDOW_COLLECTION_H
+#define WINDOW_COLLECTION_H
 
 #include <X11/Xlib.h>
 
-typedef struct _windowCollection {
-    Window* values;
-    int capacity;
-    int length;
+typedef struct _WindowNode {
+    Window window;
+    struct _WindowNode* next;
+} WindowNode;
+
+typedef struct WindowCollection {
+    WindowNode* nodes;
+    int size;
 } WindowCollection;
 
 WindowCollection* createWindowCollection();
-
-int getIndexOfWindowCollection(WindowCollection* windowCollection, Window window);
-Window getWindowOfWindowCollectionByIndex(WindowCollection* windowCollection, int index);
-void addWindowToWindowCollection(WindowCollection* windowCollection, Window window);
-void freeWindowCollection(WindowCollection* windowCollection);
+void windowCollectionAddItem(WindowCollection* windowCollection, Window window);
+WindowNode* windowCollectionGetItem(WindowCollection* windowCollection, Window windowId);
+WindowCollection* windowCollectionRemoveItem(WindowCollection* windowCollection, Window windowId);
+WindowNode* createWindowNode(Window value, WindowNode* next);
+WindowNode* freeNextWindowNode(WindowNode* node);
 
 #endif

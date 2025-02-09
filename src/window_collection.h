@@ -19,5 +19,6 @@ WindowNode* windowCollectionGetItem(WindowCollection* windowCollection, Window w
 WindowCollection* windowCollectionRemoveItem(WindowCollection* windowCollection, Window windowId);
 WindowNode* createWindowNode(Window value, WindowNode* next);
 WindowNode* freeNextWindowNode(WindowNode* node);
+WindowNode* getPreviousWindowNode(WindowNode* start, Window windowId);
 
 #endif

@@ -78,12 +78,21 @@ WindowNode* windowCollectionGetItem(WindowCollection* windowCollection, Window w
     return getWindowNode(windowCollection->nodes, windowId);    
 }
 
-/**
- * a, b, c
- * a -> b -> c
- * a -> c -> ...
- */
+WindowNode* getPreviousWindowNode(WindowNode* start, Window windowId) {
+    if (start == NULL || start->next == NULL) {
+        return NULL;
+    }
+
+    if (start->next->window == windowId) {
+        return start;
+    }
+
+    return getPreviousWindowNode(start->next, windowId);
+}
+
+
 WindowCollection* windowCollectionRemoveItem(WindowCollection* windowCollection, Window windowId) {
+
     if (windowCollection->nodes == NULL) {
         return windowCollection; 
     }
@@ -93,6 +102,16 @@ WindowCollection* windowCollectionRemoveItem(WindowCollection* windowCollection,
 
         free(windowCollection->nodes);
         windowCollection->nodes = nextNode;
+
+        return windowCollection;
+    } else {
+        WindowNode* previous = getPreviousWindowNode(windowCollection->nodes, windowId);
+
+        if (previous == NULL) {
+            return windowCollection;
+        }
+
+        freeNextWindowNode(previous);
 
         return windowCollection;
     }

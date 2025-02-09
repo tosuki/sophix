@@ -13,8 +13,9 @@
 void configureWindow(WindowManager *wm, XConfigureRequestEvent event) {
     XWindowChanges windowProperties;
     
-    int windowIndex = getIndexOfWindowCollection(wm->childWindows, event.window);
- 
+    // int windowIndex = getIndexOfWindowCollection(wm->childWindows, event.window);
+    WindowNode* windowFrameNode = windowCollectionGetItem(wm->childWindows, event.window);
+
     windowProperties.height = event.height;
     windowProperties.width = event.width;
     windowProperties.border_width = event.border_width;
@@ -23,10 +24,8 @@ void configureWindow(WindowManager *wm, XConfigureRequestEvent event) {
     windowProperties.sibling = event.above;
     windowProperties.stack_mode = event.detail;
 
-    if (windowIndex != -1) {
-        Window windowFrame = getWindowOfWindowCollectionByIndex(wm->childWindows, windowIndex);
-        XConfigureWindow(wm->display, windowFrame, event.value_mask, &windowProperties);
-
+    if (windowFrameNode != NULL) {
+        XConfigureWindow(wm->display, windowFrameNode->window, event.value_mask, &windowProperties);
         return;
     }
 
@@ -64,17 +63,24 @@ void frameWindow(WindowManager *wm, Window* window) {
     XAddToSaveSet(wm->display, *window);//save the window entity in the save set managed by x11 in case the wm crashes
     XReparentWindow(wm->display, *window, frameWindow, 0, 0);
     XMapWindow(wm->display, frameWindow);
-    addWindowToWindowCollection(wm->childWindows, frameWindow);    
+    windowCollectionAddItem(wm->childWindows, frameWindow);    
 
     dispatchWindowKeyboardEvents(wm, &frameWindow);
 }
 
 void unframeWindow(WindowManager* wm, Window* window) {
-    // to do
+    XReparentWindow(
+        wm->display,
+        *window,
+        wm->rootWindow,
+        0,
+        0
+    );
 }
 
 void unmapWindow(WindowManager* wm, XUnmapEvent event) {
     unframeWindow(wm, &event.window);
+    windowCollectionRemoveItem(wm->childWindows, event.window);
     XUnmapWindow(wm->display, event.window);
 }
 

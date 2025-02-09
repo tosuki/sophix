@@ -74,7 +74,7 @@ WindowManager* createWindowManager() {
 
     windowManager->display = display;
     windowManager->rootWindow = DefaultRootWindow(display);
-    windowManager->childWindows = createWindowCollection(DEFAULT_WINDOW_COLLECTION_CAPACITY);
+    windowManager->childWindows = createWindowCollection();
 
     return windowManager;
 }

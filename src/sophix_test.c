@@ -10,18 +10,26 @@ Window get_window(WindowNode* node) {
     return node->window;
 }
 
-int main() {
-    //0 -> 1 -> 2
-    WindowNode* node = createWindowNode(
-        0, createWindowNode(
-            1, createWindowNode(
-                2,
-                NULL
-            )
-        )
-    );
+void mapWindowNodes(WindowNode* start) {
+    if (start == NULL) {
+        return;
+    }
 
-    freeNextWindowNode(node);
-    //0 -> 2 -> -1
-    printf("%li -> %li -> %li\n", get_window(node), get_window(node->next), get_window(node->next->next));
+    printf("%d\n", start->window);
+
+    return mapWindowNodes(start->next);
+}
+
+int main() {
+    WindowCollection* collection = createWindowCollection();
+
+    windowCollectionAddItem(collection, 1);
+    windowCollectionAddItem(collection, 2);
+    windowCollectionAddItem(collection, 3);
+
+    windowCollectionRemoveItem(collection, 2);
+
+    mapWindowNodes(collection->nodes);
+
+    return 0;
 }

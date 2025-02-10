@@ -17,14 +17,15 @@ WindowCollection* createWindowCollection() {
     return collection;
 }
 
-WindowNode* createWindowNode(Window value, WindowNode* next) {
+WindowNode* createWindowNode(Window window, Window windowFrame, WindowNode* next) {
     WindowNode* node = malloc(sizeof(WindowNode));
 
     if (node == NULL) {
         panic("Failed to allocate memory to the WindowNode");
     }
 
-    node->window = value;
+    node->window = window;
+    node->windowFrame = windowFrame;
     node->next = next;
 
     return node;
@@ -47,7 +48,7 @@ WindowNode* freeNextWindowNode(WindowNode* node) {
     return node;
 }
 
-void windowCollectionAddItem(WindowCollection* windowCollection, Window window) {
+void windowCollectionAddItem(WindowCollection* windowCollection, Window window, Window windowFrame) {
     if (windowCollection->nodes == NULL) {
         windowCollection->nodes = createWindowNode(window, NULL);
     } else {

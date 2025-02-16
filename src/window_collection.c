@@ -18,8 +18,60 @@ WindowCollectionNode *create_window_collection_node(Window window, Window frame,
     return node;
 }
 
+WindowCollectionNode *window_collection_get_previous(WindowCollectionNode* root, Window window) {
+    if (root->window == window || root->next == NULL) {
+        return NULL;
+    }
 
-void window_collection_add(WindowCollection *collection, Window window, Window frame) {
+    if (root->next->window == window) {
+        return root;
+    }
+
+    return window_collection_get_previous(root->next, window);
+}
+
+void window_collection_node_free_next(WindowCollectionNode *node) {
+    if (node->next == NULL) {
+        return;
+    }
+
+    if (node->next->next != NULL) {
+        WindowCollectionNode *next;
+        free(node->next);
+        node->next = next;
+
+        return;
+    }
+
+    free(node->next);
+}
+
+void window_collection_delete(WindowCollection *collection, Window window) {
+    if (collection->nodes == NULL) {
+        puts("Attempt to delete a window that is not cached");
+        return;
+    }
+
+    if (collection->nodes->window == window) {
+        WindowCollectionNode* next = collection->nodes->next;
+        free(collection->nodes);
+        collection->nodes = next;
+
+        if (collection->length > 1) {
+            collection->length -= 1;
+        }
+    } else {
+        WindowCollectionNode *previous_node = window_collection_get_previous(collection->nodes, window);
+        
+        if (previous_node == NULL) {
+            return;
+        }
+
+        window_collection_node_free_next(previous_node);
+    }
+}
+
+WindowCollectionNode *window_collection_add(WindowCollection *collection, Window window, Window frame) {
     WindowCollectionNode* node;
 
     if (collection->nodes == NULL) {
@@ -34,6 +86,9 @@ void window_collection_add(WindowCollection *collection, Window window, Window f
     }
 
     collection->nodes = node;
+    collection->length += 1;
+
+    return node;
 }
 
 WindowCollection *create_window_collection() {

@@ -7,7 +7,14 @@
 
 #include "window_manager.h"
 #include "pointer.h"
+#include "render.h"
 #include "window_collection.h"
+
+int window_manager_on_error(Display* display, XErrorEvent* ev) {
+    printf("An error occurred, the error code is: %d\n", ev->error_code);
+
+    return 0;
+}
 
 void window_manager_run(WindowManager* wm) {
     /** 
@@ -15,6 +22,7 @@ void window_manager_run(WindowManager* wm) {
      the windows under us in the tree (childs)
      * **/
     XSelectInput(wm->display, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
+    XSetErrorHandler(&window_manager_on_error);
     create_mouse_pointer(wm);
     XSync(wm->display, False);
 
@@ -24,6 +32,13 @@ void window_manager_run(WindowManager* wm) {
         XNextEvent(wm->display, &event);
 
         switch (event.type) {
+            case CreateNotify:
+            case ReparentNotify:
+                break;
+            case MapRequest:
+                puts("A window got requested to be mapped");
+                map_window(wm, event.xmaprequest);
+                break;
             default:
                 printf("Event %d dispatched\n", event.type);
                 break;

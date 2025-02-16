@@ -1,4 +1,5 @@
 ./main
+./build
 ./build/*
 *.swp
 *.out

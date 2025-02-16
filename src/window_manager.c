@@ -6,6 +6,7 @@
 #include <malloc.h>
 
 #include "window_manager.h"
+#include "pointer.h"
 
 void window_manager_run(WindowManager* wm) {
     /** 
@@ -13,6 +14,7 @@ void window_manager_run(WindowManager* wm) {
      the windows under us in the tree (childs)
      * **/
     XSelectInput(wm->display, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
+    create_mouse_pointer(wm);
     XSync(wm->display, False);
 
     XEvent event;

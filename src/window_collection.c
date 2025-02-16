@@ -18,6 +18,22 @@ WindowCollectionNode *create_window_collection_node(Window window, Window frame,
     return node;
 }
 
+WindowCollectionNode* window_collection_node_get(WindowCollectionNode *root, Window window) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    if (root->window == window) {
+        return root;
+    }
+
+    return window_collection_node_get(root->next, window);
+}
+
+WindowCollectionNode* window_collection_get(WindowCollection *collection, Window window) {
+    return window_collection_node_get(collection->nodes, window);
+}
+
 WindowCollectionNode *window_collection_get_previous(WindowCollectionNode* root, Window window) {
     if (root->window == window || root->next == NULL) {
         return NULL;

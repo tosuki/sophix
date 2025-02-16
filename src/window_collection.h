@@ -14,6 +14,7 @@ typedef struct WindowCollection {
     unsigned int length;
 } WindowCollection;
 
+WindowCollectionNode* window_collection_get(WindowCollection *collection, Window window);
 void window_collection_delete(WindowCollection *collection, Window window);
 WindowCollectionNode* window_collection_add(WindowCollection *collection, Window window, Window frame);
 WindowCollectionNode* create_window_collection_node(Window window, Window windowFrame, WindowCollectionNode *next);

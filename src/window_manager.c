@@ -48,6 +48,7 @@ WindowManager *create_window_manager() {
     }
     
     wm->display = display;
+    wm->mode = COMMAND_MODE;
     wm->root = DefaultRootWindow(wm->display);
     wm->childs = create_window_collection();
 

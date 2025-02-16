@@ -1,0 +1,6 @@
+./main
+./build/*
+*.swp
+*.out
+*.o
+.vscode

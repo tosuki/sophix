@@ -7,6 +7,7 @@
 
 #include "window_manager.h"
 #include "pointer.h"
+#include "window_collection.h"
 
 void window_manager_run(WindowManager* wm) {
     /** 
@@ -48,6 +49,7 @@ WindowManager *create_window_manager() {
     
     wm->display = display;
     wm->root = DefaultRootWindow(wm->display);
+    wm->childs = create_window_collection();
 
     return wm;
 }

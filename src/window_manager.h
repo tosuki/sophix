@@ -23,6 +23,8 @@ typedef struct WindowManager {
     Display* display;
     
     Window root;
+    unsigned int mod_key;
+    Window focused_window;
     WindowCollection* childs;
     CommandMode mode;
 } WindowManager;

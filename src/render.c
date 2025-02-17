@@ -36,7 +36,8 @@ void frame_window(WindowManager *wm, Window window) {
 
 void map_window(WindowManager *wm, XMapRequestEvent ev) {
     printf("%li is being mapped\n", ev.window);
-    frame_window(wm, ev.window); 
+    frame_window(wm, ev.window);
+    wm->focused_window = ev.window;
 }
 
 void unmap_window(WindowManager *wm, XUnmapEvent ev) {

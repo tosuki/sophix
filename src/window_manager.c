@@ -6,6 +6,7 @@
 #include <malloc.h>
 
 #include "window_manager.h"
+#include "keybinds.h"
 #include "pointer.h"
 #include "render.h"
 #include "window_collection.h"
@@ -23,6 +24,7 @@ void window_manager_run(WindowManager* wm) {
      * **/
     XSelectInput(wm->display, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
     XSetErrorHandler(&window_manager_on_error);
+    register_global_keybinds(wm);
     create_mouse_pointer(wm);
     XSync(wm->display, False);
 
@@ -34,6 +36,11 @@ void window_manager_run(WindowManager* wm) {
         switch (event.type) {
             case CreateNotify:
             case ReparentNotify:
+                break;
+            case KeyPress:
+                handle_keydown(wm, event.xkey);
+                break;
+            case KeyRelease:
                 break;
             case MapRequest:
                 puts("A window got requested to be mapped");
@@ -64,7 +71,9 @@ WindowManager *create_window_manager() {
     
     wm->display = display;
     wm->mode = COMMAND_MODE;
+    wm->mod_key = Mod1Mask;
     wm->root = DefaultRootWindow(wm->display);
+    wm->focused_window = -1;
     wm->childs = create_window_collection();
 
     return wm;
@@ -73,4 +82,5 @@ WindowManager *create_window_manager() {
 void destroy_window_manager(WindowManager* wm) {
     XCloseDisplay(wm->display);
     free(wm);
+    exit(1);
 }

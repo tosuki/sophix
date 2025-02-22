@@ -8,6 +8,15 @@
 #define WINDOW_FRAME_BACKGROUND 0x000000
 #define WINDOW_FRAME_BORDER_WIDTH 3
 #define WINDOW_FRAME_BORDER_COLOR 0xffffff
+#define WINDOW_FRAME_FOCUSED_BORDER_COLOR 0xff0000
+
+unsigned long get_window_border_color(WindowManager* wm, Window window) {
+    if (wm->focused_window == window) {
+        return WINDOW_FRAME_FOCUSED_BORDER_COLOR;
+    } else {
+        return WINDOW_FRAME_BORDER_COLOR;
+    }
+}
 
 void frame_window(WindowManager *wm, Window window) {
     XWindowAttributes window_attributes;
@@ -23,7 +32,7 @@ void frame_window(WindowManager *wm, Window window) {
             window_attributes.width,
             window_attributes.height,
             WINDOW_FRAME_BORDER_WIDTH,
-            WINDOW_FRAME_BORDER_COLOR,
+            get_window_border_color(wm, window),
             WINDOW_FRAME_BACKGROUND
     );
     
@@ -34,10 +43,11 @@ void frame_window(WindowManager *wm, Window window) {
     XMapWindow(wm->display, window);
 }
 
+
 void map_window(WindowManager *wm, XMapRequestEvent ev) {
     printf("%li is being mapped\n", ev.window);
-    frame_window(wm, ev.window);
     wm->focused_window = ev.window;
+    frame_window(wm, ev.window);
 }
 
 void unmap_window(WindowManager *wm, XUnmapEvent ev) {

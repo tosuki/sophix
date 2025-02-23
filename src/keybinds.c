@@ -19,8 +19,18 @@ void grab_key(WindowManager* wm, Window window, char* key, unsigned int mask) {
 
 void register_global_keybinds(WindowManager* wm) {
     grab_key(wm, wm->root, "q", wm->mod_key);
+
+    //modes
     grab_key(wm, wm->root, "c", wm->mod_key);
     grab_key(wm, wm->root, "i", wm->mod_key);
+    grab_key(wm, wm->root, "r", wm->mod_key);
+    grab_key(wm, wm->root, "m", wm->mod_key);
+
+    //move + resize
+    grab_key(wm, wm->root, "Left", 0);
+    grab_key(wm, wm->root, "Right", 0);
+    grab_key(wm, wm->root, "Up", 0);
+    grab_key(wm, wm->root, "Down", 0);
 }
 
 void handle_commands(WindowManager* wm, XKeyPressedEvent ev) {
@@ -37,7 +47,14 @@ void handle_commands(WindowManager* wm, XKeyPressedEvent ev) {
     }     
 }
 
+void handle_insert(WindowManager *wm, XKeyPressedEvent ev) {}
+
+void handle_move(WindowManager *wm, XKeyPressedEvent ev) {
+    move_window(wm, ev.keycode);
+}
+
 void handle_keydown(WindowManager *wm, XKeyPressedEvent ev) {
+    printf("Keycode: %d\n", ev.keycode);
     switch (ev.keycode) {
         case 31://i
             puts("Changing to insert mode");
@@ -47,14 +64,24 @@ void handle_keydown(WindowManager *wm, XKeyPressedEvent ev) {
             puts("Changing to command mode");
             wm->mode = COMMAND_MODE;
             break;
+        case 58:
+            puts("Changing to move mode");
+            wm->mode = MOVE_MODE;
+            break;
+        case 27:
+            puts("Changing to resize mode");
+            wm->mode = RESIZE_MODE;
+            break;
     }
 
     switch (wm->mode) {
+        case MOVE_MODE:
+            handle_move(wm, ev);
         case COMMAND_MODE:
             handle_commands(wm, ev);
             break;
         case INSERT_MODE:
-            puts("Key pressed on insert mode");
+            handle_insert(wm, ev);
             break;           
     }
 }

@@ -21,6 +21,7 @@ typedef unsigned int CommandMode;
 
 typedef struct WindowManager {
     Display* display;
+    Window bar;
     Window root;
 
     unsigned int mod_key;

@@ -10,6 +10,7 @@
 #include "pointer.h"
 #include "render.h"
 #include "window_collection.h"
+#include "bar.h"
 
 int window_manager_on_error(Display* display, XErrorEvent* ev) {
     printf("An error occurred, the error code is: %d\n", ev->error_code);
@@ -24,8 +25,10 @@ void window_manager_run(WindowManager* wm) {
      * **/
     XSelectInput(wm->display, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
     XSetErrorHandler(&window_manager_on_error);
+    create_bar(wm);
     register_global_keybinds(wm);
     create_mouse_pointer(wm);
+    wm->bar = create_bar(wm);
     XSync(wm->display, False);
 
     XEvent event;
